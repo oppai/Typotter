@@ -62,6 +62,22 @@ sub __sort_table {
     } keys $table }
 }
 
+sub __read_dict {
+    my $file_path = shift;
+    my $file_handler = IO::File->new($file_path, "r");
+    my $table = {};
+    return unless $file_handler;
+
+    while(my $line = $file_handler->getline ){
+        chomp $line;
+        my @col = split ",",$line;
+        $table->{$col[0]} = $col[1];
+    };
+    $file_handler->close;
+
+    return $table;
+}
+
 
 1;
 __END__
