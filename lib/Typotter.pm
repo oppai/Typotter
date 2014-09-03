@@ -4,6 +4,7 @@ use strict;
 use warnings;
 
 use IO::File;
+use List::MoreUtils qw(zip);
 
 our $VERSION = "0.01";
 
@@ -24,6 +25,24 @@ sub __run_parser {
 sub __parse_line {
     my $line = shift;
     print $line;
+}
+
+sub __merge_table {
+    my ($src,$dst) = @_;
+    my $result = {};
+
+    my @s_key = keys $src;
+    my @d_key = keys $dst;
+
+    for my $key ( zip @s_key, @d_key ){
+        $result->{$key} = $src->{$key} + $dst->{$key};
+    }
+
+    return { map {
+        $_ => $result->{$_}
+    } sort {
+        $result->{$a} > $result->{$b}
+    } keys $result };
 }
 
 
