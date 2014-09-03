@@ -3,8 +3,28 @@ use 5.008005;
 use strict;
 use warnings;
 
+use IO::File;
+
 our $VERSION = "0.01";
 
+sub run {
+    my ($class,$args) = @_;
+    __run_parser($args->{file_path});
+}
+
+sub __run_parser {
+    my $file_path = shift;
+    my $file_handler = IO::File->new($file_path, "r");
+    while(my $line = $file_handler->getline ){
+        __parse_line($line);
+    };
+    $file_handler->close;
+}
+
+sub __parse_line {
+    my $line = shift;
+    print $line;
+}
 
 
 1;

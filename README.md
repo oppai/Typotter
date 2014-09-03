@@ -1,14 +1,16 @@
 # NAME
 
-Typotter - It's new $module
+Typotter - It's typo detection tool.
 
 # SYNOPSIS
 
     use Typotter;
+    print Typotter->detect({ file_path => $file_path });
 
 # DESCRIPTION
 
-Typotter is ...
+Typotter is typo detection tool.
+It is Unstable.
 
 # LICENSE
 
