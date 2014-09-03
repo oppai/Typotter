@@ -2,7 +2,6 @@ use strict;
 use warnings;
 
 use Test::More;
-use FindBin;
 
 BEGIN {
     use_ok('Typotter');
@@ -38,9 +37,20 @@ subtest '__merge_table' => sub {
     is_deeply $expected_table, $result,'merge and sort'
 };
 
+
+subtest '__write_dict' => sub {
+    my $table = {
+        hoge => 3,
+        foo  => 2,
+        huga => 1,
+    };
+    my $result = Typotter::__write_dict('/tmp/typotter_sample.dict',$table);
+    ok $result;
+};
+
 subtest '__read_dict' => sub {
-    my $result = Typotter::__read_dict($FindBin::Bin.'/resource/dict/sample.dict');
-    is scalar keys $result,3, "three";
+    my $result = Typotter::__read_dict('/tmp/typotter_sample.dict');
+    is scalar keys $result,3, "three words";
 };
 
 done_testing;

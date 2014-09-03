@@ -62,6 +62,18 @@ sub __sort_table {
     } keys $table }
 }
 
+sub __write_dict {
+    my ($file_path,$table) = @_;
+    my $file_handler = IO::File->new($file_path, "w");
+    return unless $file_handler;
+
+    for my $key ( sort { $table->{$a} < $table->{$b} } keys $table ) {
+        print $file_handler "$key,$table->{$key}\n";
+    };
+    $file_handler->close;
+    return 1;
+}
+
 sub __read_dict {
     my $file_path = shift;
     my $file_handler = IO::File->new($file_path, "r");
