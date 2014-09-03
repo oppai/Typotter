@@ -24,7 +24,13 @@ sub __run_parser {
 
 sub __parse_line {
     my $line = shift;
-    print $line;
+    my $table = {};
+    for my $word ( $line =~ m/([a-zA-Z]{3,})/g ) {
+        $table->{$word} += 1; 
+    }
+    use Data::Dumper;
+    warn Dumper $table;
+    return $table;
 }
 
 sub __merge_table {

@@ -7,8 +7,15 @@ BEGIN {
     use_ok('Typotter');
 }
 
-subtest '__marge_table' => sub {
-    pass;
+subtest '__parse_line' => sub {
+    my $line = '%hoge !@foo_hoge = foo; "huga" $hoge';
+    my $expected_table = {
+        hoge => 3,
+        foo  => 2,
+        huga => 1,
+    };
+    my $result = Typotter::__parse_line($line);
+    is_deeply $expected_table, $result,'detect word';
 };
 
 subtest '__merge_table' => sub {
