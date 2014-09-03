@@ -10,8 +10,12 @@ our $VERSION = "0.01";
 
 sub run {
     my ($class,$args) = @_;
-    # make dictionary
-    __run_parser($args->{file_path}) if defined $args->{file_path};
+    return unless $args->{file_path};
+
+    my $table = __read_dict('/tmp/typotter.dict');
+    $table = __merge_table( $table, __run_parser($args->{file_path}));
+    __write_dict('/tmp/typotter.dict',$table);
+    return __sort_table($table);
 }
 
 sub __run_parser {
@@ -32,7 +36,7 @@ sub __parse_line {
     for my $word ( $line =~ m/([a-zA-Z]{3,})/g ) {
         $table->{$word} += 1; 
     }
-    return __sort_table($table);
+    return $table;
 }
 
 sub __merge_table {
@@ -58,7 +62,7 @@ sub __sort_table {
     return { map {
         $_ => $table->{$_}
     } sort {
-        $table->{$a} > $table->{$b}
+        $table->{$b} <=> $table->{$a}
     } keys $table }
 }
 
@@ -67,7 +71,7 @@ sub __write_dict {
     my $file_handler = IO::File->new($file_path, "w");
     return unless $file_handler;
 
-    for my $key ( sort { $table->{$a} < $table->{$b} } keys $table ) {
+    for my $key ( sort { $table->{$b} <=> $table->{$a} } keys $table ) {
         print $file_handler "$key,$table->{$key}\n";
     };
     $file_handler->close;
@@ -77,9 +81,9 @@ sub __write_dict {
 sub __read_dict {
     my $file_path = shift;
     my $file_handler = IO::File->new($file_path, "r");
-    my $table = {};
-    return unless $file_handler;
+    return {} unless $file_handler;
 
+    my $table = {};
     while(my $line = $file_handler->getline ){
         chomp $line;
         my @col = split ",",$line;
