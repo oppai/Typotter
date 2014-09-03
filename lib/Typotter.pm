@@ -10,16 +10,20 @@ our $VERSION = "0.01";
 
 sub run {
     my ($class,$args) = @_;
-    __run_parser($args->{file_path});
+    # make dictionary
+    __run_parser($args->{file_path}) if defined $args->{file_path};
 }
 
 sub __run_parser {
     my $file_path = shift;
     my $file_handler = IO::File->new($file_path, "r");
+    my $table = {};
     while(my $line = $file_handler->getline ){
-        __parse_line($line);
+        $table = __merge_table( $table, __parse_line($line) );
     };
     $file_handler->close;
+
+    return $table;
 }
 
 sub __parse_line {
@@ -28,9 +32,7 @@ sub __parse_line {
     for my $word ( $line =~ m/([a-zA-Z]{3,})/g ) {
         $table->{$word} += 1; 
     }
-    use Data::Dumper;
-    warn Dumper $table;
-    return $table;
+    return __sort_table($table);
 }
 
 sub __merge_table {
@@ -41,14 +43,23 @@ sub __merge_table {
     my @d_key = keys $dst;
 
     for my $key ( zip @s_key, @d_key ){
-        $result->{$key} = $src->{$key} + $dst->{$key};
+        $result->{$key} = __hash_value($src,$key) + __hash_value($dst,$key) if $key;
     }
+    return $result;
+}
 
+sub __hash_value {
+    my ($hashref,$key) = @_;
+    return exists $hashref->{$key} ? $hashref->{$key} : 0;
+}
+
+sub __sort_table {
+    my $table = shift;
     return { map {
-        $_ => $result->{$_}
+        $_ => $table->{$_}
     } sort {
-        $result->{$a} > $result->{$b}
-    } keys $result };
+        $table->{$a} > $table->{$b}
+    } keys $table }
 }
 
 
