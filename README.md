@@ -1,4 +1,4 @@
-# NAME
+# NAME ![](https://travis-ci.org/oppai/Typotter.svg)
 
 Typotter - It's typo detection tool.
 
