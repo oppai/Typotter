@@ -2,8 +2,6 @@ use strict;
 use warnings;
 
 use Test::More;
-use Test::MockModule;
-use Test::MockObject;
 
 BEGIN {
     use_ok('Typotter::Dictionary::Util');
