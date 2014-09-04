@@ -1,9 +1,10 @@
 use strict;
 use warnings;
 
-use Typotter;
+use Typotter::Dictionary;
 
-Typotter->run({file_path => $ARGV[0]})
+use Data::Dumper;
+warn Dumper( Typotter::Dictionary->create({file_path => $ARGV[0]}) );
 
 
 
