@@ -3,97 +3,13 @@ use 5.008005;
 use strict;
 use warnings;
 
-use IO::File;
-use List::MoreUtils qw(zip);
-
 our $VERSION = "0.01";
 
 sub run {
     my ($class,$args) = @_;
     return unless $args->{file_path};
-
-    my $table = __read_dict('/tmp/typotter.dict');
-    $table = __merge_table( $table, __run_parser($args->{file_path}));
-    __write_dict('/tmp/typotter.dict',$table);
-    return __sort_table($table);
+    return {};
 }
-
-sub __run_parser {
-    my $file_path = shift;
-    my $file_handler = IO::File->new($file_path, "r");
-    my $table = {};
-    while(my $line = $file_handler->getline ){
-        $table = __merge_table( $table, __parse_line($line) );
-    };
-    $file_handler->close;
-
-    return $table;
-}
-
-sub __parse_line {
-    my $line = shift;
-    my $table = {};
-    for my $word ( $line =~ m/([a-zA-Z]{3,})/g ) {
-        $table->{$word} += 1; 
-    }
-    return $table;
-}
-
-sub __merge_table {
-    my ($src,$dst) = @_;
-    my $result = {};
-
-    my @s_key = keys $src;
-    my @d_key = keys $dst;
-
-    for my $key ( zip @s_key, @d_key ){
-        $result->{$key} = __hash_value($src,$key) + __hash_value($dst,$key) if $key;
-    }
-    return $result;
-}
-
-sub __hash_value {
-    my ($hashref,$key) = @_;
-    return exists $hashref->{$key} ? $hashref->{$key} : 0;
-}
-
-sub __sort_table {
-    my $table = shift;
-    return { map {
-        $_ => $table->{$_}
-    } sort {
-        $table->{$b} <=> $table->{$a}
-    } keys $table }
-}
-
-sub __write_dict {
-    my ($file_path,$table) = @_;
-    my $file_handler = IO::File->new($file_path, "w");
-    return unless $file_handler;
-
-    for my $key ( sort { $table->{$b} <=> $table->{$a} } keys $table ) {
-        print $file_handler "$key,$table->{$key}\n";
-    };
-    $file_handler->close;
-    return 1;
-}
-
-sub __read_dict {
-    my $file_path = shift;
-    my $file_handler = IO::File->new($file_path, "r");
-    return {} unless $file_handler;
-
-    my $table = {};
-    while(my $line = $file_handler->getline ){
-        chomp $line;
-        my @col = split ",",$line;
-        $table->{$col[0]} = $col[1];
-    };
-    $file_handler->close;
-
-    return $table;
-}
-
 
 1;
 __END__
